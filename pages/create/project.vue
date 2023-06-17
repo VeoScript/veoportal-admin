@@ -25,7 +25,7 @@ useHead({
         />
       </div>
       <div class="flex flex-col w-full space-y-2">
-        <label for="source-code" class="ml-3 font-light text-sm text-neutral-400">Source Code <span class="text-red-500">*</span></label>
+        <label for="source-code" class="ml-3 font-light text-sm text-neutral-400">Source Code</label>
         <input
           id="source-code"
           type="text"
@@ -33,7 +33,7 @@ useHead({
         >
       </div>
       <div class="flex flex-col w-full space-y-2">
-        <label for="demo-url" class="ml-3 font-light text-sm text-neutral-400">Demo Url <span class="text-red-500">*</span></label>
+        <label for="demo-url" class="ml-3 font-light text-sm text-neutral-400">Demo Url</label>
         <input
           id="demo-url"
           type="text"
