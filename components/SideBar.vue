@@ -4,7 +4,7 @@ const route = useRoute()
 </script>
 
 <template>
-  <div class="flex flex-col items-center w-full max-w-[15rem] h-full px-5 py-10 space-y-10 border-r border-neutral-700">
+  <div class="flex flex-col items-center w-full max-w-[15rem] h-full px-5 py-10 space-y-10 border-r border-accent-4">
     <NuxtLink to="/">
       <NuxtImg
         preload
@@ -24,7 +24,7 @@ const route = useRoute()
         <h1 class="font-bold text-sm">Jerome Villaruel</h1>
         <NuxtLink
           to="/"
-          class="w-auto px-5 py-1 rounded-full border border-neutral-700 font-light text-xs text-accent-2 transition ease-in-out duration-200 hover:opacity-50"
+          class="w-auto px-5 py-1 rounded-full border border-accent-4 font-light text-xs text-accent-2 transition ease-in-out duration-200 hover:opacity-50"
         >
           Edit
         </NuxtLink>

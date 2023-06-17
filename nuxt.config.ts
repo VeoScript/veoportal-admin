@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
   devtools: { enabled: false },
   css: ['~/assets/css/tailwind.css'],
   postcss: {
@@ -13,5 +14,5 @@ export default defineNuxtConfig({
   ],
   image: {
     domains: ['i.ibb.co']
-  }
+  },
 })
