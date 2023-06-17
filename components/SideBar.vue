@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { links } from "~/composables/links"
+import { links } from "~/composables/static/links.js"
 const route = useRoute()
 </script>
 
