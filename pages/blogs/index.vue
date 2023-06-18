@@ -1,11 +1,19 @@
 <script setup lang="ts">
+import moment from 'moment'
+
 useHead({
   title: "Admin (Blogs)"
 })
-const { data: blogs, pending } = useLazyFetch('/api/blogs')
+
+const id = ref<string>('')
+const title = ref<string>('')
+const isOpen = ref<boolean>(false)
+
+const { data: blogs, pending, refresh: refreshBlogs } = useLazyFetch('/api/blogs')
 </script>
+
 <template>
-  <div class="flex-1 w-full overflow-y-auto">
+  <div class="relative flex-1 w-full overflow-y-auto">
     <TopBar title="Blogs" />
     <div v-if="pending" class="flex flex-col items-center w-full p-10">
       <Loader />
@@ -15,27 +23,52 @@ const { data: blogs, pending } = useLazyFetch('/api/blogs')
     </div>
     <div v-else v-for="blog in blogs" :key="blog.id" class="flex flex-col w-full p-5 space-y-3">
       <div class="flex flex-row w-full h-auto overflow-hidden rounded-xl border border-accent-4">
-        <NuxtImg
-          preload
-          class="w-[70vh] h-auto object-cover"
-          :src="`${blog.image ?? '/images/placeholder.png'}`"
-          alt="Veoscript Logo"
-        />
+        <div class="relative overflow-hidden w-[100vh] h-[40vh]">
+          <NuxtImg
+            preload
+            class="w-full h-full object-cover bg-accent-4"
+            :src="`${blog.image ?? '/images/placeholder.png'}`"
+            alt="Veoscript Logo"
+          />
+        </div>
         <div class="flex flex-col w-full h-full p-5 space-y-5">
           <div class="flex flex-col w-full h-full space-y-5">
             <div class="flex flex-row items-center justify-between w-full">
-              <h1 class="font-bold text-lg">{{ blog.title }}</h1>
-              <NuxtLink
-                to="/"
-                class="w-auto px-5 py-1 rounded-full border border-accent-4 font-light text-xs text-accent-2 transition ease-in-out duration-200 hover:opacity-50"
-              >
-                Edit
-              </NuxtLink>
+              <div class="flex flex-col space-y-1">
+                <h1 class="font-bold text-xl">{{ blog.title }}</h1>
+                <span class="font-light text-xs text-neutral-500">Created at - {{ moment(blog.createdAt).format('LLLL') }}</span>
+              </div>
+              <div class="flex flex-row items-center space-x-1">
+                <NuxtLink
+                  :to="`/blogs/edit/${blog.id}`"
+                  class="w-auto px-5 py-1 rounded-full border border-accent-4 font-light text-xs text-accent-2 transition ease-in-out duration-200 hover:opacity-50"
+                >
+                  Edit
+                </NuxtLink>
+                <button
+                  type="button"
+                  class="w-auto px-5 py-1 rounded-full border border-red-500 font-light text-xs text-red-500 transition ease-in-out duration-200 hover:opacity-50"
+                  v-on:click="() => {
+                    id = blog.id
+                    title = blog.title
+                    isOpen = true
+                  }"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
             <p class="font-light text-sm">{{ blog.article }}</p>
           </div>
         </div>
       </div>
     </div>
+    <DeleteBlogModal
+      :id="id"
+      :title="title"
+      :isOpen="isOpen"
+      :setIsOpen="() => isOpen = false"
+      :refreshBlogs="refreshBlogs"
+    />
   </div>
 </template>

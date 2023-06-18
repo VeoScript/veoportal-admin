@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import moment from 'moment'
 import DeleteProjectModal from '~/components/DeleteProjectModal.vue';
 
 useHead({
@@ -34,7 +35,10 @@ const { data: projects, pending, refresh: refreshProjects } = useLazyFetch('/api
         <div class="flex flex-col w-full h-full p-5 space-y-5">
           <div class="flex flex-col w-full h-full space-y-5">
             <div class="flex flex-row items-center justify-between w-full">
-              <h1 class="font-bold text-xl">{{ project.title }}</h1>
+              <div class="flex flex-col space-y-1">
+                <h1 class="font-bold text-xl">{{ project.title }}</h1>
+                <span class="font-light text-xs text-neutral-500">Created at - {{ moment(project.createdAt).format('LLLL') }}</span>
+              </div>
               <div class="flex flex-row items-center space-x-1">
                 <NuxtLink
                   :to="`/projects/edit/${project.id}`"
