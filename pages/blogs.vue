@@ -2,22 +2,29 @@
 useHead({
   title: "Admin (Blogs)"
 })
+const { data: blogs, pending } = useLazyFetch('/api/blogs')
 </script>
 <template>
   <div class="flex-1 w-full overflow-y-auto">
     <TopBar title="Blogs" />
-    <div class="flex flex-col w-full p-5 space-y-3">
+    <div v-if="pending" class="flex flex-col items-center w-full p-10">
+      <Loader />
+    </div>
+    <div v-else-if="blogs?.length === 0" class="flex flex-col items-center w-full p-10">
+      <Empty message="blogs" />
+    </div>
+    <div v-else v-for="blog in blogs" :key="blog.id" class="flex flex-col w-full p-5 space-y-3">
       <div class="flex flex-row w-full h-auto overflow-hidden rounded-xl border border-accent-4">
         <NuxtImg
           preload
           class="w-[70vh] h-auto object-cover"
-          src="/images/placeholder.png"
+          :src="`${blog.image ?? '/images/placeholder.png'}`"
           alt="Veoscript Logo"
         />
         <div class="flex flex-col w-full h-full p-5 space-y-5">
           <div class="flex flex-col w-full h-full space-y-5">
             <div class="flex flex-row items-center justify-between w-full">
-              <h1 class="font-bold text-lg">Blog Title</h1>
+              <h1 class="font-bold text-lg">{{ blog.title }}</h1>
               <NuxtLink
                 to="/"
                 class="w-auto px-5 py-1 rounded-full border border-accent-4 font-light text-xs text-accent-2 transition ease-in-out duration-200 hover:opacity-50"
@@ -25,9 +32,7 @@ useHead({
                 Edit
               </NuxtLink>
             </div>
-            <p class="font-light text-sm">
-              Project description Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure voluptas atque labore ullam assumenda sunt quas neque enim, nostrum, ut molestias et, aut earum magnam reprehenderit eligendi? Quae, sequi molestias.
-            </p>
+            <p class="font-light text-sm">{{ blog.article }}</p>
           </div>
         </div>
       </div>
