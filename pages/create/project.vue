@@ -125,7 +125,7 @@ const handleCreateProject = async (e: Event) => {
             v-on:change="handleChangeImage"
           />
         </div>
-        </div>
+      </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="title" class="ml-3 font-light text-sm text-neutral-400">Title <span class="text-red-500">*</span></label>
         <input
