@@ -15,4 +15,9 @@ export default defineNuxtConfig({
   image: {
     domains: ['i.ibb.co']
   },
+  runtimeConfig: {
+    public: {
+      imgbbAPIKey: process.env.IMGBB_API
+    }
+  }
 })
