@@ -135,13 +135,17 @@ useHead({
     <Loader />
   </div>
   <div v-else class="flex-1 w-full overflow-y-auto">
-    <TopBar :title="`Edit Project - ${title}`" />
+    <TopBar :title="`Edit Project - ${project?.title ?? 'Loading...'}`" />
+    <LoaderSubmit
+      v-if="isLoading"
+      message="Updating..."
+    />
     <form v-on:submit="" class="flex flex-col w-full p-10 space-y-5">
       <div class="flex flex-col items-center w-full">
         <div class="relative overflow-hidden w-[70vh] h-[40vh]">
           <NuxtImg
             preload
-            class="w-full h-full object-cover rounded-xl"
+            class="w-full h-full object-cover rounded-xl bg-accent-4"
             :src="`${imageSource === '' ? image : imageSource}`"
             alt="Project Image"
           />

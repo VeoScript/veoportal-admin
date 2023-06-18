@@ -35,8 +35,8 @@ const handleChangeImage = (e: any) => {
   }
 
   if (e.target.files[0].size > 2097152) {
-  alert('Selected photo size exceeds 2 MB. Choose another one.')
-  return
+    alert('Selected photo size exceeds 2 MB. Choose another one.')
+    return
   }
 
   imageToUpload.value = e.target.files[0]
@@ -85,7 +85,7 @@ const handleCreateProject = async (e: Event) => {
         router.push('/projects')
       })
       .catch((err) => {
-        alert('Profile photo upload failed. Check your internet.')
+        alert('Selected photo upload failed. Check your internet.')
         console.error(err)
         isLoading.value = false
       })
@@ -100,12 +100,16 @@ const handleCreateProject = async (e: Event) => {
 <template>
   <div class="flex-1 w-full overflow-y-auto">
     <TopBar title="Create New Project" />
+    <LoaderSubmit
+      v-if="isLoading"
+      message="Creating..."
+    />
     <form v-on:submit="handleCreateProject" class="flex flex-col w-full p-10 space-y-5">
       <div class="flex flex-col items-center w-full">
         <div class="relative overflow-hidden w-[70vh] h-[40vh]">
           <NuxtImg
             preload
-            class="w-full h-full object-cover rounded-xl"
+            class="w-full h-full object-cover rounded-xl bg-accent-4"
             :src="`${imageSource === '' ? '/images/placeholder.png' : imageSource}`"
             alt="Project Image"
           />
