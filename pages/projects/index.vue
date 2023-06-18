@@ -37,7 +37,7 @@ const { data: projects, pending, refresh: refreshProjects } = useLazyFetch('/api
               <h1 class="font-bold text-xl">{{ project.title }}</h1>
               <div class="flex flex-row items-center space-x-1">
                 <NuxtLink
-                  to="/"
+                  :to="`/projects/edit/${project.id}`"
                   class="w-auto px-5 py-1 rounded-full border border-accent-4 font-light text-xs text-accent-2 transition ease-in-out duration-200 hover:opacity-50"
                 >
                   Edit
