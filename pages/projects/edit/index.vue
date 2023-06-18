@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const router = useRouter()
-router.push('/')
+router.push('/projects')
 
 useHead({
   title: 'Loading...'
