@@ -11,7 +11,7 @@ interface IProjects {
 export default defineEventHandler(async (event) => {
   const body = await readBody<IProjects>(event)
 
-  const projects = await prisma.projects.create({
+  const createProject = await prisma.projects.create({
     data: {
       image: body.photo,
       title: body.title,
@@ -21,5 +21,5 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  return projects
+  return createProject
 })

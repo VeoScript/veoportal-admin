@@ -1,12 +1,19 @@
 <script setup lang="ts">
+import DeleteProjectModal from '~/components/DeleteProjectModal.vue';
+
 useHead({
   title: "Admin (Projects)"
 })
-const { data: projects, pending } = useLazyFetch('/api/projects')
+
+const id = ref<string>('')
+const title = ref<string>('')
+const isOpen = ref<boolean>(false)
+
+const { data: projects, pending, refresh: refreshProjects } = useLazyFetch('/api/projects')
 </script>
 
 <template>
-  <div class="flex-1 w-full overflow-y-auto">
+  <div class="relative flex-1 w-full overflow-y-auto">
     <TopBar title="Projects" />
     <div v-if="pending" class="flex flex-col items-center w-full p-10">
       <Loader />
@@ -19,7 +26,7 @@ const { data: projects, pending } = useLazyFetch('/api/projects')
         <div class="relative overflow-hidden w-[100vh] h-[40vh]">
           <NuxtImg
             preload
-            class="w-full h-full object-cover"
+            class="w-full h-full object-cover bg-accent-4"
             :src="`${project.image ?? '/images/placeholder.png'}`"
             alt="Veoscript Logo"
           />
@@ -27,7 +34,7 @@ const { data: projects, pending } = useLazyFetch('/api/projects')
         <div class="flex flex-col w-full h-full p-5 space-y-5">
           <div class="flex flex-col w-full h-full space-y-5">
             <div class="flex flex-row items-center justify-between w-full">
-              <h1 class="font-bold text-lg">{{ project.title }}</h1>
+              <h1 class="font-bold text-xl">{{ project.title }}</h1>
               <div class="flex flex-row items-center space-x-1">
                 <NuxtLink
                   to="/"
@@ -35,15 +42,20 @@ const { data: projects, pending } = useLazyFetch('/api/projects')
                 >
                   Edit
                 </NuxtLink>
-                <NuxtLink
-                  to="/"
+                <button
+                  type="button"
                   class="w-auto px-5 py-1 rounded-full border border-red-500 font-light text-xs text-red-500 transition ease-in-out duration-200 hover:opacity-50"
+                  v-on:click="() => {
+                    id = project.id
+                    title = project.title
+                    isOpen = true
+                  }"
                 >
                   Delete
-                </NuxtLink>
+                </button>
               </div>
             </div>
-            <p class="font-light text-sm">{{ project.description }}</p>
+            <p class="font-light text-base">{{ project.description }}</p>
           </div>
           <div class="flex flex-row items-center w-full h-full space-x-2">
             <NuxtLink
@@ -66,5 +78,12 @@ const { data: projects, pending } = useLazyFetch('/api/projects')
         </div>
       </div>
     </div>
+    <DeleteProjectModal
+      :id="id"
+      :title="title"
+      :isOpen="isOpen"
+      :setIsOpen="() => isOpen = false"
+      :refreshProjects="refreshProjects"
+    />
   </div>
 </template>
