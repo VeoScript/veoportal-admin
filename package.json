@@ -11,6 +11,7 @@
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@nuxt/image": "^1.0.0-rc.1",
+    "@types/bcrypt": "^5.0.0",
     "@types/node": "^18",
     "autoprefixer": "^10.4.14",
     "nuxt": "^3.5.2",
@@ -20,6 +21,8 @@
   },
   "dependencies": {
     "@prisma/client": "^4.15.0",
-    "moment": "^2.29.4"
+    "bcrypt": "^5.1.0",
+    "moment": "^2.29.4",
+    "vue3-toastify": "^0.1.11"
   }
 }

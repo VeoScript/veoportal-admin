@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { toast } from 'vue3-toastify'
+
 useHead({
   title: "New Project"
 })
@@ -13,6 +15,10 @@ let description = ref<string>('')
 let sourceCode = ref<string>('')
 let demoUrl = ref<string>('')
 
+let imageToUploadError = ref<string>('')
+let titleError = ref<string>('')
+let descriptionError = ref<string>('')
+
 const handleDefaultValue = () => {
   isLoading.value = false
   imageToUpload.value = ''
@@ -21,12 +27,16 @@ const handleDefaultValue = () => {
   description.value = ''
   sourceCode.value = ''
   demoUrl.value = ''
+  titleError.value = ''
+  descriptionError.value = ''
 }
 
 const handleChangeImage = (e: any) => {
   const file = e.target.files[0]
   const reader = new FileReader()
   const allowedExtensions = /(\.jpg|\.jpeg|\.jfif|\.png)$/i
+
+  imageToUploadError.value = ''
 
   if (e.target.value !== '' && !allowedExtensions.exec(e.target.value)) {
     e.target.value = ''
@@ -53,6 +63,10 @@ const handleCreateProject = async (e: Event) => {
 
   const config = useRuntimeConfig()
 
+  if (imageToUpload.value === '') return imageToUploadError.value = 'Image is required'
+  if (title.value === '') return titleError.value = 'Title is required'
+  if (description.value === '') return descriptionError.value = 'Description is required'
+
   try {
     let photo: string = ''
 
@@ -71,7 +85,7 @@ const handleCreateProject = async (e: Event) => {
         photo = result.data.url
       })
       .then(async () => {
-        await useFetch('/api/projects/create', {
+        const createProject = await useFetch('/api/projects/create', {
           method: 'POST',
           body: {
             photo: photo,
@@ -81,6 +95,25 @@ const handleCreateProject = async (e: Event) => {
             demoUrl: demoUrl.value,
           }
         })
+
+        if (createProject.error.value) {
+          toast.dark(String(createProject.error.value.statusMessage), {
+            autoClose: 5000,
+            dangerouslyHTMLString: true,
+            bodyClassName: "font-poppins font-light text-sm text-red-500",
+            hideProgressBar: true,
+          });
+          isLoading.value = false
+          return
+        } else {
+          toast.dark("Project created successfully.", {
+            autoClose: 5000,
+            dangerouslyHTMLString: true,
+            bodyClassName: "font-poppins font-light text-sm text-greed-500",
+            hideProgressBar: true,
+          });
+        }
+
         handleDefaultValue()
         router.push('/projects')
       })
@@ -105,7 +138,7 @@ const handleCreateProject = async (e: Event) => {
       message="Creating..."
     />
     <form v-on:submit="handleCreateProject" class="flex flex-col w-full p-10 space-y-5">
-      <div class="flex flex-col items-center w-full">
+      <div class="flex flex-col items-center w-full space-y-2">
         <div class="relative overflow-hidden w-[70vh] h-[40vh]">
           <NuxtImg
             preload
@@ -129,6 +162,7 @@ const handleCreateProject = async (e: Event) => {
             v-on:change="handleChangeImage"
           />
         </div>
+        <span v-if="imageToUploadError" class="ml-3 font-light text-xs text-red-500">{{ imageToUploadError }}</span>
       </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="title" class="ml-3 font-light text-sm text-neutral-400">Title <span class="text-red-500">*</span></label>
@@ -137,7 +171,9 @@ const handleCreateProject = async (e: Event) => {
           type="text"
           class="w-full p-3 outline-none rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
           v-model="title"
+          v-on:input="() => titleError = ''"
         >
+        <span v-if="titleError" class="ml-3 font-light text-xs text-red-500">{{ titleError }}</span>
       </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="description" class="ml-3 font-light text-sm text-neutral-400">Description <span class="text-red-500">*</span></label>
@@ -147,7 +183,9 @@ const handleCreateProject = async (e: Event) => {
           cols="30"
           rows="5"
           v-model="description"
+          v-on:input="() => descriptionError = ''"
         />
+        <span v-if="descriptionError" class="ml-3 font-light text-xs text-red-500">{{ descriptionError }}</span>
       </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="source-code" class="ml-3 font-light text-sm text-neutral-400">Source Code</label>
