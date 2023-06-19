@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { toast } from 'vue3-toastify'
+
 const route = useRoute()
 const router = useRouter()
 
@@ -19,6 +21,9 @@ let description = ref<string>('')
 let sourceCode = ref<string>('')
 let demoUrl = ref<string>('')
 
+let titleError = ref<string>('')
+let descriptionError = ref<string>('')
+
 watch(pending, () => {
   image.value = String(project.value?.image ?? 'Loading...')
   title.value = String(project.value?.title ?? 'Loading...')
@@ -36,6 +41,8 @@ const handleDefaultValue = () => {
   description.value = ''
   sourceCode.value = ''
   demoUrl.value = ''
+  titleError.value = ''
+  descriptionError.value = ''
 }
 
 const handleChangeImage = (e: any) => {
@@ -67,6 +74,9 @@ const handleUpdateProject = async (e: Event) => {
   e.preventDefault()
 
   const config = useRuntimeConfig()
+  
+  if (title.value === '') return titleError.value = 'Title is required'
+  if (description.value === '') return descriptionError.value = 'Description is required'
 
   try {
     if (imageSource.value !== '' && imageToUpload.value !== '') {
@@ -86,7 +96,7 @@ const handleUpdateProject = async (e: Event) => {
         photo = result.data.url
       })
       .then(async () => {
-        await useFetch(`/api/projects/edit/${projectId}`, {
+        const editProject = await useFetch(`/api/projects/edit/${projectId}`, {
           method: 'PATCH',
           body: {
             photo: photo,
@@ -96,6 +106,25 @@ const handleUpdateProject = async (e: Event) => {
             demoUrl: demoUrl.value,
           }
         })
+
+        if (editProject.error.value) {
+          toast.dark(String(editProject.error.value.statusMessage), {
+            autoClose: 5000,
+            dangerouslyHTMLString: true,
+            bodyClassName: "font-poppins font-light text-sm text-red-500",
+            hideProgressBar: true,
+          });
+          isLoading.value = false
+          return
+        } else {
+          toast.dark("Project updated successfully.", {
+            autoClose: 5000,
+            dangerouslyHTMLString: true,
+            bodyClassName: "font-poppins font-light text-sm text-greed-500",
+            hideProgressBar: true,
+          });
+        }
+
         handleDefaultValue()
         router.push('/projects')
       })
@@ -107,7 +136,7 @@ const handleUpdateProject = async (e: Event) => {
     } else {
       isLoading.value = true
 
-      await useFetch(`/api/projects/edit/${projectId}`, {
+      const editProject = await useFetch(`/api/projects/edit/${projectId}`, {
         method: 'PATCH',
         body: {
           photo: image.value,
@@ -117,6 +146,25 @@ const handleUpdateProject = async (e: Event) => {
           demoUrl: demoUrl.value,
         }
       })
+
+      if (editProject.error.value) {
+        toast.dark(String(editProject.error.value.statusMessage), {
+          autoClose: 5000,
+          dangerouslyHTMLString: true,
+          bodyClassName: "font-poppins font-light text-sm text-red-500",
+          hideProgressBar: true,
+        });
+        isLoading.value = false
+        return
+      } else {
+        toast.dark("Project updated successfully.", {
+          autoClose: 5000,
+          dangerouslyHTMLString: true,
+          bodyClassName: "font-poppins font-light text-sm text-greed-500",
+          hideProgressBar: true,
+        });
+      }
+
       handleDefaultValue()
       router.push('/projects')
     }
@@ -173,7 +221,9 @@ useHead({
           type="text"
           class="w-full p-3 outline-none rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
           v-model="title"
+          v-on:input="() => titleError = ''"
         >
+        <span v-if="titleError" class="ml-3 font-light text-xs text-red-500">{{ titleError }}</span>
       </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="description" class="ml-3 font-light text-sm text-neutral-400">Description <span class="text-red-500">*</span></label>
@@ -183,7 +233,9 @@ useHead({
           cols="30"
           rows="5"
           v-model="description"
+          v-on:input="() => descriptionError = ''"
         />
+        <span v-if="descriptionError" class="ml-3 font-light text-xs text-red-500">{{ descriptionError }}</span>
       </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="source-code" class="ml-3 font-light text-sm text-neutral-400">Source Code</label>

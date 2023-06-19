@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { toast } from 'vue3-toastify'
+
 useHead({
   title: "New Blog"
 })
@@ -12,6 +14,11 @@ let title = ref<string>('')
 let topic = ref<string>('')
 let article = ref<string>('')
 
+let imageToUploadError = ref<any>('')
+let titleError = ref<string>('')
+let topicError = ref<string>('')
+let articleError = ref<string>('')
+
 const handleDefaultValue = () => {
   isLoading.value = false
   imageToUpload.value = ''
@@ -19,12 +26,18 @@ const handleDefaultValue = () => {
   title.value = ''
   topic.value = ''
   article.value = ''
+  imageToUploadError.value = ''
+  titleError.value = ''
+  topicError.value = ''
+  articleError.value = ''
 }
 
 const handleChangeImage = (e: any) => {
   const file = e.target.files[0]
   const reader = new FileReader()
   const allowedExtensions = /(\.jpg|\.jpeg|\.jfif|\.png)$/i
+
+  imageToUploadError.value = ''
 
   if (e.target.value !== '' && !allowedExtensions.exec(e.target.value)) {
     e.target.value = ''
@@ -51,6 +64,11 @@ const handleCreateBlog = async (e: Event) => {
 
   const config = useRuntimeConfig()
 
+  if (imageToUpload.value === '') return imageToUploadError.value = 'Image is required'
+  if (title.value === '') return titleError.value = 'Title is required'
+  if (topic.value === '') return topicError.value = 'Topic is required'
+  if (article.value === '') return articleError.value = 'Article is required'
+
   try {
     let photo: string = ''
 
@@ -69,7 +87,7 @@ const handleCreateBlog = async (e: Event) => {
         photo = result.data.url
       })
       .then(async () => {
-        await useFetch('/api/blogs/create', {
+        const createBlog = await useFetch('/api/blogs/create', {
           method: 'POST',
           body: {
             photo: photo,
@@ -78,6 +96,25 @@ const handleCreateBlog = async (e: Event) => {
             article: article.value,
           }
         })
+
+        if (createBlog.error.value) {
+          toast.dark(String(createBlog.error.value.statusMessage), {
+            autoClose: 5000,
+            dangerouslyHTMLString: true,
+            bodyClassName: "font-poppins font-light text-sm text-red-500",
+            hideProgressBar: true,
+          });
+          isLoading.value = false
+          return
+        } else {
+          toast.dark("Blog created successfully.", {
+            autoClose: 5000,
+            dangerouslyHTMLString: true,
+            bodyClassName: "font-poppins font-light text-sm text-greed-500",
+            hideProgressBar: true,
+          });
+        }
+
         handleDefaultValue()
         router.push('/blogs')
       })
@@ -102,7 +139,7 @@ const handleCreateBlog = async (e: Event) => {
       message="Creating..."
     />
     <form v-on:submit="handleCreateBlog" class="flex flex-col w-full p-10 space-y-3">
-      <div class="flex flex-col items-center w-full">
+      <div class="flex flex-col items-center w-full space-y-2">
         <div class="relative overflow-hidden w-[70vh] h-[40vh]">
           <NuxtImg
             preload
@@ -126,6 +163,7 @@ const handleCreateBlog = async (e: Event) => {
             v-on:change="handleChangeImage"
           />
         </div>
+        <span v-if="imageToUploadError" class="ml-3 font-light text-xs text-red-500">{{ imageToUploadError }}</span>
       </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="title" class="ml-3 font-light text-sm text-neutral-400">Title <span class="text-red-500">*</span></label>
@@ -134,7 +172,9 @@ const handleCreateBlog = async (e: Event) => {
           type="text"
           class="w-full p-3 outline-none rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
           v-model="title"
+          v-on:input="() => titleError = ''"
         >
+        <span v-if="titleError" class="ml-3 font-light text-xs text-red-500">{{ titleError }}</span>
       </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="topic" class="ml-3 font-light text-sm text-neutral-400">Topic <span class="text-red-500">*</span></label>
@@ -143,7 +183,9 @@ const handleCreateBlog = async (e: Event) => {
           type="text"
           class="w-full p-3 outline-none rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
           v-model="topic"
+          v-on:input="() => topicError = ''"
         >
+        <span v-if="topicError" class="ml-3 font-light text-xs text-red-500">{{ topicError }}</span>
       </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="article" class="ml-3 font-light text-sm text-neutral-400">Article <span class="text-red-500">*</span></label>
@@ -153,7 +195,9 @@ const handleCreateBlog = async (e: Event) => {
           cols="30"
           rows="10"
           v-model="article"
+          v-on:input="() => articleError = ''"
         />
+        <span v-if="articleError" class="ml-3 font-light text-xs text-red-500">{{ articleError }}</span>
       </div>
       <div class="flex flex-col items-end w-full space-y-2">
         <button

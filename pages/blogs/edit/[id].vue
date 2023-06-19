@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { toast } from 'vue3-toastify'
+
 const route = useRoute()
 const router = useRouter()
 
@@ -18,6 +20,10 @@ let title = ref<string>('')
 let topic = ref<string>('')
 let article = ref<string>('')
 
+let titleError = ref<string>('')
+let topicError = ref<string>('')
+let articleError = ref<string>('')
+
 watch(pending, () => {
   image.value = String(blog.value?.image ?? 'Loading...')
   title.value = String(blog.value?.title ?? 'Loading...')
@@ -33,6 +39,9 @@ const handleDefaultValue = () => {
   title.value = ''
   topic.value = ''
   article.value = ''
+  titleError.value = ''
+  topicError.value = ''
+  articleError.value = ''
 }
 
 const handleChangeImage = (e: any) => {
@@ -65,6 +74,10 @@ const handleUpdateBlog = async (e: Event) => {
 
   const config = useRuntimeConfig()
 
+  if (title.value === '') return titleError.value = 'Title is required'
+  if (topic.value === '') return topicError.value = 'Topic is required'
+  if (article.value === '') return articleError.value = 'Article is required'
+
   try {
     if (imageSource.value !== '' && imageToUpload.value !== '') {
       let photo: string = ''
@@ -83,7 +96,7 @@ const handleUpdateBlog = async (e: Event) => {
         photo = result.data.url
       })
       .then(async () => {
-        await useFetch(`/api/blogs/edit/${blogId}`, {
+        const editBlog = await useFetch(`/api/blogs/edit/${blogId}`, {
           method: 'PATCH',
           body: {
             photo: photo,
@@ -92,6 +105,25 @@ const handleUpdateBlog = async (e: Event) => {
             article: article.value,
           }
         })
+
+        if (editBlog.error.value) {
+          toast.dark(String(editBlog.error.value.statusMessage), {
+            autoClose: 5000,
+            dangerouslyHTMLString: true,
+            bodyClassName: "font-poppins font-light text-sm text-red-500",
+            hideProgressBar: true,
+          });
+          isLoading.value = false
+          return
+        } else {
+          toast.dark("Blog updated successfully.", {
+            autoClose: 5000,
+            dangerouslyHTMLString: true,
+            bodyClassName: "font-poppins font-light text-sm text-greed-500",
+            hideProgressBar: true,
+          });
+        }
+
         handleDefaultValue()
         router.push('/blogs')
       })
@@ -103,7 +135,7 @@ const handleUpdateBlog = async (e: Event) => {
     } else {
       isLoading.value = true
 
-      await useFetch(`/api/blogs/edit/${blogId}`, {
+      const editBlog = await useFetch(`/api/blogs/edit/${blogId}`, {
         method: 'PATCH',
         body: {
           photo: image.value,
@@ -112,6 +144,25 @@ const handleUpdateBlog = async (e: Event) => {
           article: article.value,
         }
       })
+
+      if (editBlog.error.value) {
+        toast.dark(String(editBlog.error.value.statusMessage), {
+          autoClose: 5000,
+          dangerouslyHTMLString: true,
+          bodyClassName: "font-poppins font-light text-sm text-red-500",
+          hideProgressBar: true,
+        });
+        isLoading.value = false
+        return
+      } else {
+        toast.dark("Blog updated successfully.", {
+          autoClose: 5000,
+          dangerouslyHTMLString: true,
+          bodyClassName: "font-poppins font-light text-sm text-greed-500",
+          hideProgressBar: true,
+        });
+      }
+
       handleDefaultValue()
       router.push('/blogs')
     }
@@ -126,7 +177,10 @@ useHead({
 </script>
 
 <template>
-  <div class="flex-1 w-full overflow-y-auto">
+  <div v-if="pending" class="flex-1 flex-col items-center justify-center w-full h-full p-10">
+    <Loader />
+  </div>
+  <div v-else class="flex-1 w-full overflow-y-auto">
     <TopBar :title="`Edit Blog - ${blog?.title ?? 'Loading...'}`" />
     <LoaderSubmit
       v-if="isLoading"
@@ -165,7 +219,9 @@ useHead({
           type="text"
           class="w-full p-3 outline-none rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
           v-model="title"
+          v-on:input="() => titleError = ''"
         >
+        <span v-if="titleError" class="ml-3 font-light text-xs text-red-500">{{ titleError }}</span>
       </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="topic" class="ml-3 font-light text-sm text-neutral-400">Topic <span class="text-red-500">*</span></label>
@@ -174,7 +230,9 @@ useHead({
           type="text"
           class="w-full p-3 outline-none rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
           v-model="topic"
+          v-on:input="() => topicError = ''"
         >
+        <span v-if="topicError" class="ml-3 font-light text-xs text-red-500">{{ topicError }}</span>
       </div>
       <div class="flex flex-col w-full space-y-2">
         <label for="article" class="ml-3 font-light text-sm text-neutral-400">Article <span class="text-red-500">*</span></label>
@@ -184,7 +242,9 @@ useHead({
           cols="30"
           rows="10"
           v-model="article"
+          v-on:input="() => articleError = ''"
         />
+        <span v-if="articleError" class="ml-3 font-light text-xs text-red-500">{{ articleError }}</span>
       </div>
       <div class="flex flex-row items-center justify-end w-full space-x-2">
         <button
