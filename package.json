@@ -22,6 +22,7 @@
   "dependencies": {
     "@prisma/client": "^4.15.0",
     "bcrypt": "^5.1.0",
+    "iron-session": "^6.3.1",
     "moment": "^2.29.4",
     "vue3-toastify": "^0.1.11"
   }
