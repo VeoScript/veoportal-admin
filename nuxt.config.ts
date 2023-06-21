@@ -11,6 +11,13 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxt/image',
+    ['@nuxtjs/google-fonts', {
+      families: {
+        'Poppins': true,
+        download: true,
+        inject: true
+      }
+    }],
   ],
   image: {
     domains: ['i.ibb.co']
