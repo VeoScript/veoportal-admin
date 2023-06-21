@@ -1,4 +1,5 @@
 import { useSession } from '~/utils/session';
+import errorResponse from '~/utils/error-response';
 import prisma from "~/composables/prisma";
 import * as bcrypt from "bcrypt";
 
@@ -23,13 +24,13 @@ export default defineEventHandler(async (event) => {
   })
 
   if (!user) {
-    throw createError({ fatal: true, statusMessage: "Account not found!" })
+    return errorResponse(event, { statusCode: 400, statusMessage: 'Account not found!' })
   }
 
   const hashedPassword = await bcrypt.compare(body.password, user.password);
 
   if (!hashedPassword) {
-    throw createError({ fatal: true, statusMessage: "Password is incorrect!" })
+    return errorResponse(event, { statusCode: 400, statusMessage: 'Password is incorrect!' })
   }
 
   session.user = {
