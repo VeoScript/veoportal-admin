@@ -23,13 +23,13 @@ export default defineEventHandler(async (event) => {
   })
 
   if (!user) {
-    throw createError({ statusCode: 404, statusMessage: "Account not found!" })
+    throw createError({ fatal: true, statusMessage: "Account not found!" })
   }
 
   const hashedPassword = await bcrypt.compare(body.password, user.password);
 
   if (!hashedPassword) {
-    throw createError({ fatal: true, statusCode: 404, statusMessage: "Password is incorrect!" })
+    throw createError({ fatal: true, statusMessage: "Password is incorrect!" })
   }
 
   session.user = {
