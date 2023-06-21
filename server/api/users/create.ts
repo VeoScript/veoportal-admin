@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       // P2002 - is prisma error code for unique constraint violation...
       if (error.code === 'P2002') {
-        throw createError({ fatal: true, statusMessage: "This account is not available." })
+        return errorResponse(event, { statusCode: 400, statusMessage: 'This user is not available.' })
       }
     }
   }
