@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   const hashedPassword = await bcrypt.compare(body.password, user.password);
 
   if (!hashedPassword) {
-    throw createError({ statusCode: 404, statusMessage: "Password is incorrect!" })
+    throw createError({ fatal: true, statusCode: 404, statusMessage: "Password is incorrect!" })
   }
 
   session.user = {
