@@ -31,11 +31,11 @@ const handleDefaultValue = () => {
 const handleChangeImage = (e: any) => {
   const file = e.target.files[0]
   const reader = new FileReader()
-  const allowedExtensions = /(\.jpg|\.jpeg|\.jfif|\.png)$/i
+  const allowedExtensions = /(\.jpg|\.jpeg|\.jfif|\.png|\.webp)$/i
 
   if (e.target.value !== '' && !allowedExtensions.exec(e.target.value)) {
     e.target.value = ''
-    alert('Please select jpg, jpeg or png only!')
+    alert('Please select jpg, jpeg, png or webp only!')
     return
   }
 
@@ -199,7 +199,7 @@ useHead({
               type="file"
               id="upload-image"
               class="hidden"
-              accept=".jpg, .png, .jpeg, .jfif"
+              accept=".jpg, .png, .jpeg, .jfif .webp"
               v-on:change="handleChangeImage"
             />
           </div>
