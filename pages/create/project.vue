@@ -30,7 +30,7 @@ const handleDefaultValue = () => {
 const handleChangeImage = (e: any) => {
   const file = e.target.files[0]
   const reader = new FileReader()
-  const allowedExtensions = /(\.jpg|\.jpeg|\.jfif|\.png)$/i
+  const allowedExtensions = /(\.jpg|\.jpeg|\.jfif|\.png|\.webp)$/i
 
   imageToUploadError.value = ''
 
