@@ -18,9 +18,21 @@ module.exports = {
       },
       fontFamily: {
         "poppins": "Poppins"
+      },
+      typography: {
+        white: {
+          css: {
+            color: 'white',
+            'a:hover': {
+              color: 'whatever'
+            }
+          }
+        }
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }
 
