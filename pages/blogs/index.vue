@@ -64,7 +64,10 @@ useHead({
                   </button>
                 </div>
               </div>
-              <p class="font-light text-sm">{{ blog.article }}</p>
+              <article 
+                class="cms-content"
+                v-html="$mdRenderer.render(blog.article)"
+              />
             </div>
           </div>
         </div>

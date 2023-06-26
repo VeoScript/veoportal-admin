@@ -5,3 +5,9 @@
 * {
   font-family: "Poppins";
 }
+
+@layer components {
+  .cms-content {
+    @apply prose-sm text-white 
+  }
+}
