@@ -27,8 +27,8 @@ useHead({
       <div v-else-if="blogs?.length === 0" class="flex flex-col items-center w-full p-10">
         <Empty message="blogs" />
       </div>
-      <div v-else v-for="blog in blogs" :key="blog.id" class="flex flex-col w-full p-5 space-y-3">
-        <div class="flex flex-row w-full h-auto overflow-hidden rounded-xl border border-accent-4">
+      <div v-else v-for="blog in blogs" :key="blog.id" class="flex flex-col w-full">
+        <div class="flex flex-row w-full h-auto overflow-hidden border-b border-accent-4">
           <div class="relative overflow-hidden w-[100vh] h-[40vh]">
             <NuxtImg
               preload
