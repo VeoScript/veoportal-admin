@@ -65,7 +65,7 @@ useHead({
                 </div>
               </div>
               <article 
-                class="cms-content"
+                class="cms-content line-clamp-3"
                 v-html="$mdRenderer.render(blog.article)"
               />
             </div>
