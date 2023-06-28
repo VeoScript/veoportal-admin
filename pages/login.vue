@@ -66,7 +66,7 @@ useHead({
   <NuxtLayout name="authlayout">
     <form v-on:submit="handleLogin" class="flex flex-col items-center w-full space-y-3">
       <div class="flex flex-col w-full space-y-2">
-        <label for="name" class="ml-3 font-light text-sm text-neutral-400">Name</label>
+        <label for="name" class="ml-3 font-light text-sm text-neutral-400">Email</label>
         <input
           id="email"
           type="text"
