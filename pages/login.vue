@@ -42,8 +42,8 @@ const handleLogin = async (e: Event) => {
     }
   })
 
-  if (login.error.value) {
-    toast.dark(String(login.error.value.statusMessage), {
+  if (login.data?.value?.status === 401) {
+    toast.dark(login.data?.value?.error, {
       autoClose: 5000,
       dangerouslyHTMLString: true,
       bodyClassName: "font-poppins font-light text-sm text-red-500",
