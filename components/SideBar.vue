@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { links } from "~/composables/static/links.js"
+import { useSideBarMenuStore } from "~/stores/global"
 
 const { data: user, pending: isPendingUser } = await useLazyFetch('/api/users/user')
+
+const sideBarStore = useSideBarMenuStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -17,6 +20,7 @@ const handleLogout = async () => {
 
   if (logout.data.value) {
     isLoading.value = false
+    sideBarStore.setIsShow(false)
     router.push('/login')
   } else {
     isLoading.value = false
@@ -25,8 +29,19 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-between w-full max-w-[15rem] h-full px-5 py-10 space-y-10 border-r border-accent-4">
-    <NuxtLink to="/">
+  <button
+    v-if="sideBarStore.isShow"
+    @click="sideBarStore.setIsShow(false)"
+    class="absolute z-20 flex md:hidden w-full h-full bg-white bg-opacity-50"
+  />
+  <div
+    :class="sideBarStore.isShow ? 'flex' : 'hidden md:flex'"
+    class="absolute z-20 left-0 md:static md:left-auto flex flex-col items-center justify-between w-full max-w-[15rem] h-full px-5 py-10 space-y-10 border-r border-accent-4 bg-accent-3"
+  >
+    <NuxtLink
+      to="/"
+      @click="sideBarStore.setIsShow(false)"
+    >
       <NuxtImg
         preload
         class="w-12"
@@ -57,6 +72,7 @@ const handleLogout = async () => {
         <NuxtLink
           to="/edit-account"
           class="w-auto px-5 py-1 rounded-full border border-accent-4 font-light text-xs text-accent-2 transition ease-in-out duration-200 hover:opacity-50"
+          @click="sideBarStore.setIsShow(false)"
         >
           Edit
         </NuxtLink>
@@ -66,6 +82,7 @@ const handleLogout = async () => {
           <NuxtLink
             :to="link.link"
             :class="`flex flex-row items-center justify-start w-full px-5 py-3 space-x-2 rounded-xl ${ route.path === link.link ? 'bg-accent-4' : 'bg-none' } hover:bg-accent-4 transition ease-in-out duration-200`"
+            @click="sideBarStore.setIsShow(false)"
           >
             <svg v-if="link.name === 'Dashboard'" class="w-5 h-5 text-accent-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"></path>
