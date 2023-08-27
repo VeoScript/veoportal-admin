@@ -1,30 +1,49 @@
 <script setup lang="ts">
 import { toast } from 'vue3-toastify'
 
+const { data: user, pending: isPendingUser } = await useLazyFetch('/api/users/user')
+
 const router = useRouter()
 
 let isLoading = ref<boolean>(false)
+let isLoadingChangePassword = ref<boolean>(false)
+
 let imageToUpload = ref<any>('')
 let imageSource = ref<any>('')
+let currenctImage = ref<string>('')
 let name = ref<string>('')
 let username = ref<string>('')
 let email = ref<string>('')
-let password = ref<string>('')
+let oldpassword = ref<string>('')
+let newpassword = ref<string>('')
 let repassword = ref<string>('')
 
 let nameError = ref<string>('')
+let usernameError = ref<string>('')
 let emailError = ref<string>('')
-let passwordError = ref<string>('')
+let newPasswordError = ref<string>('')
+let oldPasswordError = ref<string>('')
 let repasswordError = ref<string>('')
+
+watchEffect(() => {
+  imageToUpload.value = ''
+  imageSource.value = user?.value?.image as string
+  currenctImage.value = user?.value?.image as string
+  name.value = user?.value?.name as string
+  username.value = user?.value?.username as string
+  email.value = user?.value?.email as string
+})
 
 const handleDefaultValue = () => {
   isLoading.value = false
+  isLoadingChangePassword.value = false
   imageToUpload.value = ''
   imageSource.value = ''
   name.value = ''
   username.value = ''
   email.value = ''
-  password.value = ''
+  oldpassword.value = ''
+  newpassword.value = ''
   repassword.value = ''
 }
 
@@ -59,15 +78,12 @@ const handleCreateProject = async (e: Event) => {
   const config = useRuntimeConfig()
 
   if (name.value === '') return nameError.value = 'Name is required'
-  if (email.value === '') return emailError.value = 'Email is required'
-  if (password.value === '') return passwordError.value = 'Password is required'
-  if (repassword.value === '') return repasswordError.value = 'Re-enter password is required'
-  if (password.value !== repassword.value) return passwordError.value = 'Password not match, try again'
+  if (username.value === '') return usernameError.value = 'Username is required'
 
   try {
     let photo: string = ''
 
-    if (imageToUpload.value) {
+    if (currenctImage.value === '') {
       const body = new FormData()
       body.append('image', imageToUpload.value)
 
@@ -82,19 +98,17 @@ const handleCreateProject = async (e: Event) => {
         photo = result.data.url
       })
       .then(async () => {
-        const createUser = await useFetch('/api/users/create', {
-          method: 'POST',
+        const editUser = await useFetch('/api/users/edit', {
+          method: 'PATCH',
           body: {
             photo: photo,
             name: name.value,
             username: username.value,
-            email: email.value,
-            password: password.value,
           }
         })
 
-        if (createUser.error.value) {
-          toast.dark(String(createUser.error.value.statusMessage), {
+        if (editUser.data.value?.status === 401) {
+          toast.dark(String(editUser.data.value?.error), {
             autoClose: 5000,
             dangerouslyHTMLString: true,
             bodyClassName: "font-poppins font-light text-sm text-red-500",
@@ -103,7 +117,7 @@ const handleCreateProject = async (e: Event) => {
           isLoading.value = false
           return
         } else {
-          toast.dark("User created successfully.", {
+          toast.dark("Account updated successfully.", {
             autoClose: 5000,
             dangerouslyHTMLString: true,
             bodyClassName: "font-poppins font-light text-sm text-green-500",
@@ -122,19 +136,17 @@ const handleCreateProject = async (e: Event) => {
     } else {
       isLoading.value = true
 
-      const createUser = await useFetch('/api/users/create', {
-        method: 'POST',
+      const editUser = await useFetch('/api/users/edit', {
+        method: 'PATCH',
         body: {
-          photo: photo,
+          photo: currenctImage,
           name: name.value,
           username: username.value,
-          email: email.value,
-          password: password.value,
         }
       })
 
-      if (createUser.error.value) {
-        toast.dark(String(createUser.error.value.statusMessage), {
+      if (editUser.data.value?.status === 401) {
+        toast.dark(String(editUser.data.value?.error), {
           autoClose: 5000,
           dangerouslyHTMLString: true,
           bodyClassName: "font-poppins font-light text-sm text-red-500",
@@ -143,7 +155,7 @@ const handleCreateProject = async (e: Event) => {
         isLoading.value = false
         return
       } else {
-        toast.dark("User created successfully.", {
+        toast.dark("Account updated successfully.", {
           autoClose: 5000,
           dangerouslyHTMLString: true,
           bodyClassName: "font-poppins font-light text-sm text-green-500",
@@ -160,20 +172,60 @@ const handleCreateProject = async (e: Event) => {
   }
 }
 
+const handleChangePassword = async (e: Event) => {
+  e.preventDefault()
+
+  if (oldpassword.value === '') return oldPasswordError.value = 'Old password is required'
+  if (newpassword.value === '') return newPasswordError.value = 'New password is required'
+  if (repassword.value === '') return repasswordError.value = 'Re-enter password is required'
+  if (newpassword.value !== repassword.value) return newPasswordError.value = 'Password not match, try again'
+
+  isLoadingChangePassword.value = true
+
+  const changePassword = await useFetch('/api/users/change-password', {
+    method: 'PATCH',
+    body: {
+      old_password: oldpassword.value,
+      new_password: newpassword.value,
+    }
+  })
+
+  if (changePassword.data.value?.status === 401) {
+    toast.dark(String(changePassword.data.value?.error), {
+      autoClose: 5000,
+      dangerouslyHTMLString: true,
+      bodyClassName: "font-poppins font-light text-sm text-red-500",
+      hideProgressBar: true,
+    });
+    isLoading.value = false
+    return
+  } else {
+    toast.dark("Password updated successfully.", {
+      autoClose: 5000,
+      dangerouslyHTMLString: true,
+      bodyClassName: "font-poppins font-light text-sm text-green-500",
+      hideProgressBar: true,
+    });
+  }
+  
+  handleDefaultValue()
+  router.push('/')
+}
+
 // auto detect if the user is logged in (using nuxt3 middleware)...
 definePageMeta({
   middleware: ['auth']
 })
 
 useHead({
-  title: "Create Admin User"
+  title: "Edit Account"
 })
 </script>
 
 <template>
   <NuxtLayout>
     <div class="flex-1 w-full overflow-y-auto">
-      <TopBar title="Create Admin User" />
+      <TopBar title="Edit Account" />
       <LoaderSubmit
         v-if="isLoading"
         message="Creating..."
@@ -224,30 +276,55 @@ useHead({
               class="w-full p-3 outline-none rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
               v-model="username"
             >
+            <span v-if="usernameError" class="ml-3 font-light text-xs text-red-500">{{ usernameError }}</span>
           </div>
           <div class="flex flex-col w-full space-y-2">
             <label for="email" class="ml-3 font-light text-sm text-neutral-400">Email <span class="text-red-500">*</span></label>
             <input
+              disabled
               id="email"
               type="email"
-              class="w-full p-3 outline-none rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
+              class="w-full p-3 outline-none cursor-not-allowed rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
               v-model="email"
               v-on:input="() => emailError = ''"
             >
             <span v-if="emailError" class="ml-3 font-light text-xs text-red-500">{{ emailError }}</span>
           </div>
         </div>
-        <div class="flex flex-row items-center w-full space-x-2">
+        <div class="flex flex-col items-end w-full space-y-2">
+          <button
+            :disabled="isLoading"
+            type="submit"
+            :class="`w-auto px-5 py-2 rounded-full border border-accent-4 text-sm text-accent-3 bg-accent-1 transition ease-in-out duration-200 hover:opacity-50 ${isLoading ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}`"
+          >
+            {{ isLoading ? 'Updating...' : 'Update' }}
+          </button>
+        </div>
+      </form>
+      <form v-on:submit="handleChangePassword" class="flex flex-col w-full p-10 space-y-10 border-t border-neutral-700">   
+        <h1 class="font-bold">Change Password</h1>     
+        <div class="flex flex-col items-center w-full space-y-2">
           <div class="flex flex-col w-full space-y-2">
-            <label for="password" class="ml-3 font-light text-sm text-neutral-400">Password <span class="text-red-500">*</span></label>
+            <label for="oldpassword" class="ml-3 font-light text-sm text-neutral-400">Old Password <span class="text-red-500">*</span></label>
             <input
-              id="password"
+              id="oldpassword"
               type="password"
               class="w-full p-3 outline-none rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
-              v-model="password"
-              v-on:input="() => passwordError = ''"
+              v-model="oldpassword"
+              v-on:input="() => oldPasswordError = ''"
             >
-            <span v-if="passwordError" class="ml-3 font-light text-xs text-red-500">{{ passwordError }}</span>
+            <span v-if="oldPasswordError" class="ml-3 font-light text-xs text-red-500">{{ oldPasswordError }}</span>
+          </div>
+          <div class="flex flex-col w-full space-y-2">
+            <label for="newpassword" class="ml-3 font-light text-sm text-neutral-400">New Password <span class="text-red-500">*</span></label>
+            <input
+              id="newpassword"
+              type="password"
+              class="w-full p-3 outline-none rounded-xl border border-accent-4 bg-transparent focus:border-accent-1"
+              v-model="newpassword"
+              v-on:input="() => newPasswordError = ''"
+            >
+            <span v-if="newPasswordError" class="ml-3 font-light text-xs text-red-500">{{ newPasswordError }}</span>
           </div>
           <div class="flex flex-col w-full space-y-2">
             <label for="repassword" class="ml-3 font-light text-sm text-neutral-400">Re-enter Password <span class="text-red-500">*</span></label>
@@ -263,11 +340,11 @@ useHead({
         </div>
         <div class="flex flex-col items-end w-full space-y-2">
           <button
-            :disabled="isLoading"
+            :disabled="isLoadingChangePassword"
             type="submit"
-            :class="`w-auto px-5 py-2 rounded-full border border-accent-4 text-sm text-accent-3 bg-accent-1 transition ease-in-out duration-200 hover:opacity-50 ${isLoading ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}`"
+            :class="`w-auto px-5 py-2 rounded-full border border-accent-4 text-sm text-accent-3 bg-accent-1 transition ease-in-out duration-200 hover:opacity-50 ${isLoadingChangePassword ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}`"
           >
-            {{ isLoading ? 'Creating...' : 'Create' }}
+            {{ isLoadingChangePassword ? 'Changing...' : 'Change' }}
           </button>
         </div>
       </form>

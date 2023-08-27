@@ -1,5 +1,4 @@
 import { useSession } from '~/utils/session';
-import errorResponse from '~/utils/error-response';
 import prisma from "~/composables/prisma";
 import * as bcrypt from "bcrypt";
 

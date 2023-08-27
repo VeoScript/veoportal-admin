@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { links } from "~/composables/static/links.js"
 
+const { data: user, pending: isPendingUser } = await useLazyFetch('/api/users/user')
+
 const route = useRoute()
 const router = useRouter()
 
@@ -34,15 +36,26 @@ const handleLogout = async () => {
     </NuxtLink>
     <div class="flex flex-col items-center w-full space-y-10">
       <div class="flex flex-col items-center w-full space-y-3">
-        <NuxtImg
-          preload
-          class="w-20 h-20 rounded-full object-cover"
-          src="/images/jeromevillaruel.webp"
-          alt="Veoscript"
-        />
-        <h1 class="font-bold text-sm">Jerome Villaruel</h1>
+        <div v-if="isPendingUser" class="w-auto">
+          <NuxtImg
+            preload
+            class="w-20 h-20 rounded-full object-cover"
+            src="/images/placeholder.png"
+            alt="Veoscript"
+          />
+        </div>
+        <div v-else class="w-auto">
+          <NuxtImg
+            preload
+            class="w-20 h-20 rounded-full object-cover"
+            :src="user?.image === '' ? '/images/placeholder.png' : String(user?.image)"
+            alt="Veoscript"
+          />
+        </div>
+        <h1 v-if="isPendingUser" class="font-bold text-sm">Loading...</h1>
+        <h1 v-if="!isPendingUser" class="font-bold text-sm">{{ user?.name }}</h1>
         <NuxtLink
-          to="/"
+          to="/edit-account"
           class="w-auto px-5 py-1 rounded-full border border-accent-4 font-light text-xs text-accent-2 transition ease-in-out duration-200 hover:opacity-50"
         >
           Edit
