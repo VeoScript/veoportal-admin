@@ -24,13 +24,19 @@ export default defineEventHandler(async (event) => {
   })
 
   if (!user) {
-    return errorResponse(event, { statusCode: 400, statusMessage: 'Account not found!' })
+    return {
+      status: 401,
+      error: 'Account not found!'
+    }
   }
 
   const hashedPassword = await bcrypt.compare(body.password, user.password);
 
   if (!hashedPassword) {
-    return errorResponse(event, { statusCode: 400, statusMessage: 'Password is incorrect!' })
+    return {
+      status: 401,
+      error: 'Password is incorrect!'
+    }
   }
 
   session.user = {
@@ -39,5 +45,8 @@ export default defineEventHandler(async (event) => {
 
   await session.save();
 
-  return 'Logged in successfully!'
+  return {
+    status: 200,
+    error: 'Login Success'
+  }
 })
