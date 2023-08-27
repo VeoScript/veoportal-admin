@@ -106,7 +106,7 @@ const handleCreateBlog = async (e: Event) => {
           toast.dark("Blog created successfully.", {
             autoClose: 5000,
             dangerouslyHTMLString: true,
-            bodyClassName: "font-poppins font-light text-sm text-greed-500",
+            bodyClassName: "font-poppins font-light text-sm text-green-500",
             hideProgressBar: true,
           });
         }

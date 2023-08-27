@@ -105,7 +105,7 @@ const handleCreateProject = async (e: Event) => {
           toast.dark("Project created successfully.", {
             autoClose: 5000,
             dangerouslyHTMLString: true,
-            bodyClassName: "font-poppins font-light text-sm text-greed-500",
+            bodyClassName: "font-poppins font-light text-sm text-green-500",
             hideProgressBar: true,
           });
         }
