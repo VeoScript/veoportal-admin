@@ -83,7 +83,7 @@ const handleCreateProject = async (e: Event) => {
   try {
     let photo: string = ''
 
-    if (currenctImage.value === '') {
+    if (imageToUpload.value) {
       const body = new FormData()
       body.append('image', imageToUpload.value)
 
@@ -197,7 +197,7 @@ const handleChangePassword = async (e: Event) => {
       bodyClassName: "font-poppins font-light text-sm text-red-500",
       hideProgressBar: true,
     });
-    isLoading.value = false
+    isLoadingChangePassword.value = false
     return
   } else {
     toast.dark("Password updated successfully.", {
@@ -224,7 +224,7 @@ useHead({
 
 <template>
   <NuxtLayout>
-    <div class="flex-1 w-full overflow-y-auto">
+    <div v-if="!isPendingUser" class="flex-1 w-full overflow-y-auto">
       <TopBar title="Edit Account" />
       <LoaderSubmit
         v-if="isLoading"
