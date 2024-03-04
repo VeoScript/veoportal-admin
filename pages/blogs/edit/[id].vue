@@ -183,7 +183,7 @@ useHead({
 
 <template>
   <NuxtLayout>
-    <div v-if="pending" class="flex-1 flex-col items-center justify-center w-full h-full p-10">
+    <div v-if="pending" class="flex-1 flex-col items-center justify-center w-full h-full p-5 md:p-10">
       <Loader />
     </div>
     <div v-else class="flex-1 w-full overflow-y-auto">
@@ -192,9 +192,9 @@ useHead({
         v-if="isLoading"
         message="Updating..."
       />
-      <form v-on:submit="handleUpdateBlog" class="flex flex-col w-full p-10 space-y-3">
+      <form v-on:submit="handleUpdateBlog" class="flex flex-col w-full p-5 md:p-10 space-y-3">
         <div class="flex flex-col items-center w-full">
-          <div class="relative overflow-hidden w-[70vh] h-[40vh]">
+          <div class="relative overflow-hidden w-full md:w-[70vh] h-[40vh]">
             <NuxtImg
               preload
               class="w-full h-full object-cover rounded-xl bg-accent-4"

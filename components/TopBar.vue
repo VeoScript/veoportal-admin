@@ -15,7 +15,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="sticky top-0 z-10 flex flex-row items-center justify-between w-full px-10 py-5 border-b border-accent-4 backdrop-blur-xl bg-transparent bg-opacity-50">
+  <div class="sticky top-0 z-10 flex flex-row items-center justify-between w-full px-5 md:px-10 py-5 border-b border-accent-4 backdrop-blur-xl bg-accent-3 bg-opacity-80">
     <div class="flex flex-row items-center space-x-5">
       <button
         class="block md:hidden outline-none"

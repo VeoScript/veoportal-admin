@@ -178,7 +178,7 @@ useHead({
         v-if="isLoading"
         message="Creating..."
       />
-      <form v-on:submit="handleCreateProject" class="flex flex-col w-full p-10 space-y-5">
+      <form v-on:submit="handleCreateProject" class="flex flex-col w-full p-5 md:p-10 space-y-5">
         <div class="flex flex-col items-center w-full">
           <div class="relative overflow-hidden w-[30vh] h-[30vh]">
             <NuxtImg
