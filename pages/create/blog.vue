@@ -144,9 +144,9 @@ useHead({
         v-if="isLoading"
         message="Creating..."
       />
-      <form v-on:submit="handleCreateBlog" class="flex flex-col w-full p-10 space-y-3">
+      <form v-on:submit="handleCreateBlog" class="flex flex-col w-full p-5 md:p-10 space-y-3">
         <div class="flex flex-col items-center w-full space-y-2">
-          <div class="relative overflow-hidden w-[70vh] h-[40vh]">
+          <div class="relative overflow-hidden w-full md:w-[70vh] h-[40vh]">
             <NuxtImg
               preload
               class="w-full h-full object-cover rounded-xl bg-accent-4"

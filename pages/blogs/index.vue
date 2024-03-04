@@ -28,57 +28,42 @@ useHead({
         <Empty message="blogs" />
       </div>
       <div v-else v-for="blog in blogs" :key="blog.id" class="flex flex-col w-full">
-        <div class="flex flex-row w-full h-auto overflow-hidden border-b border-accent-4">
-          <div class="relative overflow-hidden w-[100vh] h-[40vh]">
-            <NuxtImg
-              preload
-              class="w-full h-full object-cover bg-accent-4"
-              :src="`${blog.image ?? '/images/placeholder.png'}`"
-              alt="Veoscript Logo"
-            />
+        <div class="flex flex-col md:flex-row w-full h-auto overflow-hidden border-b border-accent-4">
+          <div class="relative overflow-hidden w-full md:w-[100vh] h-[40vh]">
+            <NuxtImg preload class="w-full h-full object-cover bg-accent-4"
+              :src="`${blog.image ?? '/images/placeholder.png'}`" alt="Blog Image" />
           </div>
           <div class="flex flex-col w-full h-full p-5 space-y-5">
             <div class="flex flex-col w-full h-full space-y-5">
-              <div class="flex flex-row items-center justify-between w-full">
+              <div class="flex flex-row items-center justify-between w-full space-x-10">
                 <div class="flex flex-col space-y-1">
                   <h1 class="font-bold text-xl">{{ blog.title }}</h1>
-                  <span class="font-light text-xs text-neutral-500">Created at - {{ moment(blog.createdAt).format('LLLL') }}</span>
+                  <span class="font-light text-xs text-neutral-500">Created at - {{
+                    moment(blog.createdAt).format('LLLL') }}</span>
                 </div>
-                <div class="flex flex-row items-center space-x-1">
-                  <NuxtLink
-                    :to="`/blogs/edit/${blog.id}`"
-                    class="w-auto px-5 py-1 rounded-full border border-accent-4 font-light text-xs text-accent-2 transition ease-in-out duration-200 hover:opacity-50"
-                  >
+                <div class="flex flex-col md:flex-row items-center space-x-0 md:space-x-1 space-y-1 md:space-y-0">
+                  <NuxtLink :to="`/blogs/edit/${blog.id}`"
+                    class="w-20 md:w-auto px-5 py-1 rounded-full border border-accent-4 font-light text-xs text-center text-accent-2 transition ease-in-out duration-200 hover:opacity-50">
                     Edit
                   </NuxtLink>
-                  <button
-                    type="button"
-                    class="w-auto px-5 py-1 rounded-full border border-red-500 font-light text-xs text-red-500 transition ease-in-out duration-200 hover:opacity-50"
+                  <button type="button"
+                    class="w-20 md:w-auto px-5 py-1 rounded-full border border-red-500 font-light text-xs text-red-500 transition ease-in-out duration-200 hover:opacity-50"
                     v-on:click="() => {
                       id = blog.id
                       title = blog.title
                       isOpen = true
-                    }"
-                  >
+                    }">
                     Delete
                   </button>
                 </div>
               </div>
-              <article 
-                class="font-light text-base line-clamp-3"
-                v-html="$mdRenderer.render(blog.article)"
-              />
+              <article class="font-light text-base line-clamp-3" v-html="$mdRenderer.render(blog.article)" />
             </div>
           </div>
         </div>
       </div>
-      <DeleteBlogModal
-        :id="id"
-        :title="title"
-        :isOpen="isOpen"
-        :setIsOpen="() => isOpen = false"
-        :refreshBlogs="refreshBlogs"
-      />
+      <DeleteBlogModal :id="id" :title="title" :isOpen="isOpen" :setIsOpen="() => isOpen = false"
+        :refreshBlogs="refreshBlogs" />
     </div>
   </NuxtLayout>
 </template>
