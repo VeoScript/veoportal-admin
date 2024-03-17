@@ -5,6 +5,7 @@ interface IUser {
   photo: string;
   name: string;
   username: string;
+  opentowork: boolean;
 }
 
 export default defineEventHandler(async (event) => {
@@ -34,12 +35,13 @@ export default defineEventHandler(async (event) => {
       image: body.photo,
       name: body.name,
       username: body.username,
+      isOpenToWork: body.opentowork,
     },
   });
 
   return {
     status: 200,
-    error: '',
-    data: editUser
+    error: "",
+    data: editUser,
   };
 });
